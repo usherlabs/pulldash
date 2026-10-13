@@ -1,0 +1,88 @@
+{
+  "cli_version": "0.10.6",
+  "checkpoint_id": "01M4SVSE6X57CHT2Q05895NP85",
+  "session_id": "01a13381-b822-7701-9c83-e20972d3e11e",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-13T05:29:32.717712069Z",
+  "branch": "feat/cloudflare-internal",
+  "checkpoints_count": 3,
+  "files_touched": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/deploy-cloudflare.yml",
+    ".gitignore",
+    ".prettierignore",
+    "README.md",
+    "cloudflare.config.ts",
+    "scripts/build-browser.test.ts",
+    "scripts/build-browser.ts",
+    "src/api/api.test.ts",
+    "src/api/api.ts",
+    "src/api/github-config.json",
+    "src/browser/contexts/auth.tsx",
+    "wrangler.config.ts"
+  ],
+  "agent": "Codex",
+  "model": "gpt-6.1-sol",
+  "turn_id": "d65ab46f0aea",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 324198,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 17222144,
+    "output_tokens": 56858,
+    "api_call_count": 91
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-13T05:29:32.063794333Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 126,
+    "total_committed": 0,
+    "total_lines_changed": 228,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 970,
+      "user_lines_removed": 126,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".codex/hooks.json": 88,
+        ".github/workflows/ci.yml": 12,
+        ".github/workflows/deploy-cloudflare.yml": 52,
+        ".gitignore": 5,
+        ".pi/extensions/entire/index.ts": 168,
+        ".prettierignore": 11,
+        "README.md": 135,
+        "bun.lock": 193,
+        "cloudflare.config.ts": 34,
+        "package.json": 8,
+        "scripts/build-browser.test.ts": 73,
+        "scripts/build-browser.ts": 12,
+        "src/api/api.test.ts": 128,
+        "src/api/api.ts": 32,
+        "src/api/github-config.json": 3,
+        "src/browser/contexts/auth.tsx": 4,
+        "src/browser/contexts/telemetry.tsx": 4,
+        "wrangler.config.ts": 8
+      },
+      "user_removed_per_file": {
+        ".github/workflows/ci.yml": 2,
+        "bun.lock": 12,
+        "package.json": 3,
+        "scripts/build-browser.ts": 2,
+        "src/api/api.ts": 10,
+        "src/browser/contexts/auth.tsx": 10,
+        "src/browser/contexts/telemetry.tsx": 87
+      }
+    }
+  ]
+}
