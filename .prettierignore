@@ -1,0 +1,11 @@
+# Local agent state is not project source.
+.codex/
+.entire/
+.pi/
+
+# Generated deployment and application files.
+.cloudflare/
+.wrangler/
+dist/
+public/
+release/

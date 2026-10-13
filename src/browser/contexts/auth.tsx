@@ -7,15 +7,6 @@ import {
   type ReactNode,
 } from "react";
 
-// ============================================================================
-// GitHub OAuth App Configuration
-// ============================================================================
-
-// OAuth App Client ID - enables simple user authentication like GitHub CLI.
-// Users just authorize and get access to their repos based on scopes.
-// No app installation required on repos/orgs.
-export const GITHUB_CLIENT_ID = "Ov23ct2e5eDCkITh5xlh";
-
 // Storage keys
 const TOKEN_STORAGE_KEY = "pulldash_github_token";
 const TOKEN_EXPIRY_KEY = "pulldash_github_token_expiry";
@@ -36,6 +27,7 @@ interface TokenResponse {
   access_token: string;
   token_type: string;
   scope: string;
+  expires_in?: number;
   error?: string;
   error_description?: string;
 }
@@ -115,6 +107,8 @@ function storeToken(token: string, expiresIn?: number): void {
     if (expiresIn) {
       const expiryDate = new Date(Date.now() + expiresIn * 1000);
       localStorage.setItem(TOKEN_EXPIRY_KEY, expiryDate.toISOString());
+    } else {
+      localStorage.removeItem(TOKEN_EXPIRY_KEY);
     }
   } catch {
     console.error("Failed to store token in localStorage");
@@ -301,7 +295,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           if (tokenData.access_token) {
             // Success! Store the token and disable anonymous mode
-            storeToken(tokenData.access_token);
+            storeToken(tokenData.access_token, tokenData.expires_in);
             setStoredAnonymousMode(false);
             setState({
               isAuthenticated: true,

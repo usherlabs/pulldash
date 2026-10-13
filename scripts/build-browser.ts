@@ -5,7 +5,7 @@ import { resolve } from "path";
 
 const isWatch = process.argv.includes("--watch");
 
-async function build() {
+async function buildBrowser() {
   // Build main app
   const mainResult = await Bun.build({
     entrypoints: ["./src/browser/index.html"],
@@ -86,7 +86,17 @@ if (typeof document === 'undefined') {
   return true;
 }
 
-await build();
+async function build() {
+  try {
+    return await buildBrowser();
+  } catch (error) {
+    console.error("Browser build failed:", error);
+    return false;
+  }
+}
+
+const success = await build();
+if (!success && !isWatch) process.exit(1);
 
 if (isWatch) {
   console.log("\nWatching for changes...");
