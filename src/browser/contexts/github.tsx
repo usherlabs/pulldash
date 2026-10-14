@@ -283,7 +283,10 @@ class RequestCache {
 
   setPending<T>(key: string, promise: Promise<T>): void {
     this.pending.set(key, { promise, timestamp: Date.now() });
-    promise.finally(() => this.pending.delete(key));
+    promise.then(
+      () => this.pending.delete(key),
+      () => this.pending.delete(key)
+    );
   }
 
   clearPending(key: string): void {
@@ -435,7 +438,7 @@ type Listener = () => void;
 // GitHub Store - Combines API client + state management
 // ============================================================================
 
-function createGitHubStore() {
+export function createGitHubStore() {
   let state: GitHubState = {
     ready: false,
     error: null,
@@ -672,7 +675,11 @@ function createGitHubStore() {
       return;
     }
 
-    const cacheKey = `prlist:${queries.sort().join("|")}:${page}:${perPage}`;
+    const queryKey = [...queries].sort().join("|");
+    const selectionChanged =
+      queryKey !== [...state.prListQueries].sort().join("|") ||
+      page !== state.prListPage;
+    const cacheKey = `prlist:${queryKey}:${page}:${perPage}`;
     const FRESH_TTL = 30_000; // 30 seconds
 
     // Check for stale data - show immediately if we have any
@@ -694,10 +701,17 @@ function createGitHubStore() {
       });
       // If fresh, don't revalidate
       if (!stale.isStale) return;
-    } else if (!backgroundRefresh) {
-      // Only show loading state if this is not a background refresh
+    } else {
+      // Results from another filter/page must not survive a failed search.
       setState((s) => ({
-        prList: { ...s.prList, loading: true, error: null },
+        prList: {
+          ...s.prList,
+          items: selectionChanged ? [] : s.prList.items,
+          totalCount: selectionChanged ? 0 : s.prList.totalCount,
+          lastFetchedAt: selectionChanged ? null : s.prList.lastFetchedAt,
+          loading: selectionChanged || !backgroundRefresh,
+          error: null,
+        },
         prListQueries: queries,
         prListPage: page,
       }));

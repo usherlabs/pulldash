@@ -44,3 +44,8 @@ dist/
 release/
 public/
 .env*.local
+
+# Cloudflare build output and local credentials
+.cloudflare/
+.wrangler/
+.dev.vars*

@@ -1,22 +1,44 @@
 import { Hono } from "hono";
+import githubConfig from "./github-config.json";
 
 // ============================================================================
-// GitHub OAuth App Configuration
+// GitHub device-flow configuration
 // ============================================================================
 
-// OAuth App (not GitHub App) - enables simple user authentication
-// like the GitHub CLI, without requiring app installation on repos.
-// Users just authorize and get access to their repos based on scopes.
-const GITHUB_CLIENT_ID = "Ov23ct2e5eDCkITh5xlh";
-// Note: Client secret would be added here for OAuth web flow in the future
-// const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+// The public client ID is shared with Cloudflare configuration.
+// OAuth Apps use scopes; GitHub Apps use their configured permissions and installations.
+type Bindings = { GITHUB_CLIENT_ID?: string };
 
 // ============================================================================
 // API Routes
 // ============================================================================
 
-const api = new Hono()
+const api = new Hono<{
+  Bindings: Bindings;
+  Variables: { githubClientId: string };
+}>()
   .basePath("/api")
+  .use("/auth/device/*", async (c, next) => {
+    // Workers supply bindings; the local and desktop servers use environment variables.
+    const clientId =
+      c.env?.GITHUB_CLIENT_ID ??
+      (typeof process !== "undefined"
+        ? process.env.GITHUB_CLIENT_ID
+        : undefined) ??
+      githubConfig.clientId;
+    if (!clientId?.trim()) {
+      return c.json(
+        {
+          error:
+            "GitHub device login is not configured. Use a personal access token or configure GITHUB_CLIENT_ID.",
+        },
+        503
+      );
+    }
+    c.set("githubClientId", clientId.trim());
+    c.header("Cache-Control", "no-store");
+    await next();
+  })
 
   // Device Authorization - Step 1: Request device code
   // Proxies to GitHub since their endpoint doesn't support CORS
@@ -31,7 +53,7 @@ const api = new Hono()
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          client_id: GITHUB_CLIENT_ID,
+          client_id: c.get("githubClientId"),
           scope: "repo read:user",
         }),
       });
@@ -71,7 +93,7 @@ const api = new Hono()
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            client_id: GITHUB_CLIENT_ID,
+            client_id: c.get("githubClientId"),
             device_code,
             grant_type: "urn:ietf:params:oauth:grant-type:device_code",
           }),

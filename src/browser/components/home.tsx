@@ -975,8 +975,24 @@ export function Home() {
                   Sign in with GitHub
                 </button>
               </div>
-            ) : loadingPrs ||
-              (config.repos.length > 0 && prs.length === 0 && !prList.error) ? (
+            ) : prList.error ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                <AlertCircle className="w-12 h-12 text-destructive/60 mb-4" />
+                <p className="text-lg font-medium text-destructive">
+                  Failed to load pull requests
+                </p>
+                <p className="text-sm text-muted-foreground mt-1 max-w-md">
+                  {prList.error}
+                </p>
+                <button
+                  onClick={refreshPRList}
+                  className="flex items-center gap-2 px-4 py-2 mt-4 rounded-lg bg-foreground text-background font-medium text-sm hover:bg-foreground/90 transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Retry
+                </button>
+              </div>
+            ) : loadingPrs ? (
               <PRListSkeleton count={8} />
             ) : prs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
